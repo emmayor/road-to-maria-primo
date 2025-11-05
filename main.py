@@ -68,6 +68,7 @@ async def info(interaction: discord.Interaction):
         await interaction.response.send_message(embed=embed)
     except Exception as e:
         # Retry with authentication
+        print("Error sending info to user. Trying again with re-authentication")
         iracing_auth_data = await authenticate(iracing_email, iracing_password)
         await interaction.response.send_message(embed=embed)
 
@@ -158,6 +159,7 @@ async def post_info():
         await channel.send(embed=embed)
     except Exception as e:
         # Retry with authentication
+        print("Error sending info to channel. Trying again with re-authentication")
         await authenticate(iracing_email, iracing_password)
         await channel.send(embed=embed)
 
