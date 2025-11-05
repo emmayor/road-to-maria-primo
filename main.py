@@ -55,7 +55,7 @@ async def on_ready():
     # iRacing authentication
     try:
         iracing_auth_data = await authenticate(iracing_email, iracing_password)
-        print(f"iRacing authentication successfull - {iracing_auth_data["email"]} - {iracing_auth_data["custId"]}")
+        # print(f"iRacing authentication successfull - {iracing_auth_data["email"]} - {iracing_auth_data["custId"]}")
         post_info.start()
     except Exception as e:
         print(f"Error while authenticating with iRacing: {e}")
@@ -64,8 +64,12 @@ async def on_ready():
 @bot.tree.command(name="info", description="A CUANTO ESTAN LOS BONEKOS DE LA PRIMAAAA????")
 async def info(interaction: discord.Interaction):
     embed = await build_info_embed()
-    await interaction.response.send_message(embed=embed)
-
+    try:
+        await interaction.response.send_message(embed=embed)
+    except Exception as e:
+        # Retry with authentication
+        await authenticate(iracing_email, iracing_password)
+        await interaction.response.send_message(embed=embed)
 
 async def build_info_embed():
     reference_id = 895659
@@ -146,12 +150,16 @@ async def build_info_embed():
 
 @tasks.loop(minutes=60)
 async def post_info():
-    print(high_speed_racism_id)
     channel = await bot.fetch_channel(high_speed_racism_id)
     if not channel:
         print("⚠️ Channel not found. Check CHANNEL_ID.")
     embed = await build_info_embed()
-    await channel.send(embed=embed)
+    try:
+        await channel.send(embed=embed)
+    except Exception as e:
+        # Retry with authentication
+        await authenticate(iracing_email, iracing_password)
+        await channel.send(embed=embed)
 
 
 async def authenticate(email, password):
