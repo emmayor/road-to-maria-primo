@@ -160,7 +160,7 @@ async def post_info():
     except Exception as e:
         # Retry with authentication
         print("Error sending info to channel. Trying again with re-authentication")
-        await authenticate(iracing_email, iracing_password)
+        iracing_auth_data = await authenticate(iracing_email, iracing_password)
         await channel.send(embed=embed)
 
 
