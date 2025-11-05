@@ -68,7 +68,7 @@ async def info(interaction: discord.Interaction):
         await interaction.response.send_message(embed=embed)
     except Exception as e:
         # Retry with authentication
-        await authenticate(iracing_email, iracing_password)
+        iracing_auth_data = await authenticate(iracing_email, iracing_password)
         await interaction.response.send_message(embed=embed)
 
 async def build_info_embed():
