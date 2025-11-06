@@ -70,8 +70,8 @@ async def maria(interaction: discord.Interaction):
         await interaction.response.send_message(embed=embed)
 
 
-#@tasks.loop(time=datetime.time(hour=0, minute=0, tzinfo=datetime.timezone.utc))
-@tasks.loop(minutes=1)
+@tasks.loop(time=datetime.time(hour=0, minute=0, tzinfo=datetime.timezone.utc))
+#@tasks.loop(minutes=1)
 async def post_info():
     global last_message
     if last_message is not None:
