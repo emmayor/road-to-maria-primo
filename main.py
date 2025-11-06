@@ -32,16 +32,13 @@ cust_ids = ["1136936", "1211220", "656021", "895659"]
 iracing_url = "https://members-ng.iracing.com"
 headers = {"User-Agent": "RoadToMariaPrimo/1.0 (+https://tbq.com)"}
 
-
 def encode_pw(username, password):
     initialHash = hashlib.sha256((password + username.lower()).encode('utf-8')).digest()
     hashInBase64 = base64.b64encode(initialHash).decode('utf-8')
     return hashInBase64
 
-
 # Create a single shared aiohttp session for your bot
 session: aiohttp.ClientSession | None = None
-
 
 @bot.event
 async def on_ready():
@@ -63,13 +60,14 @@ async def on_ready():
 
 @bot.tree.command(name="info", description="A CUANTO ESTAN LOS BONEKOS DE LA PRIMAAAA????")
 async def info(interaction: discord.Interaction):
-    embed = await build_info_embed()
     try:
+        embed = await build_info_embed()
         await interaction.response.send_message(embed=embed)
     except Exception as e:
         # Retry with authentication
         print("Error sending info to user. Trying again with re-authentication")
         iracing_auth_data = await authenticate(iracing_email, iracing_password)
+        embed = await build_info_embed()
         await interaction.response.send_message(embed=embed)
 
 async def build_info_embed():
@@ -148,19 +146,19 @@ async def build_info_embed():
     embed.set_footer(text="Powered by El Más Grande")
     return embed
 
-
 @tasks.loop(minutes=60)
 async def post_info():
     channel = await bot.fetch_channel(high_speed_racism_id)
     if not channel:
         print("⚠️ Channel not found. Check CHANNEL_ID.")
-    embed = await build_info_embed()
     try:
+        embed = await build_info_embed()
         await channel.send(embed=embed)
     except Exception as e:
         # Retry with authentication
         print("Error sending info to channel. Trying again with re-authentication")
         iracing_auth_data = await authenticate(iracing_email, iracing_password)
+        embed = await build_info_embed()
         await channel.send(embed=embed)
 
 
@@ -172,19 +170,16 @@ async def authenticate(email, password):
     }
     return await post(url, payload)
 
-
 async def get_multiple_users_data(cust_ids):
     cust_ids_joint = ",".join(cust_ids)
     url = f"{iracing_url}/data/member/get?cust_ids={cust_ids_joint}&include_licenses=true"
     response = await get(url)
     return await get(response["link"])
 
-
 async def get_user_data(cust_id):
     url = f"{iracing_url}/data/member/get?cust_ids={cust_id}&include_licenses=true"
     response = await get(url)
     return await get(response["link"])
-
 
 async def get(url):
     global session
@@ -207,7 +202,6 @@ async def get(url):
     except Exception as e:
         print("GET Error", e)
         return None
-
 
 async def post(url, payload):
     global session
